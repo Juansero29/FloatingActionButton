@@ -101,6 +101,8 @@ public class FloatingActionMenu extends ViewGroup {
     private ValueAnimator mHideBackgroundAnimator;
     private int mBackgroundColor;
 
+    private Drawable mCustomIcon;
+
     private int mLabelsPosition;
     private Context mLabelsContext;
     private String mMenuLabelText;
@@ -120,6 +122,12 @@ public class FloatingActionMenu extends ViewGroup {
 
     public FloatingActionMenu(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context, attrs);
+    }
+
+    public FloatingActionMenu(Context context, AttributeSet attrs, int defStyleAttr, Drawable customIcon) {
+        super(context, attrs, defStyleAttr);
+        mCustomIcon = customIcon;
         init(context, attrs);
     }
 
@@ -156,9 +164,14 @@ public class FloatingActionMenu extends ViewGroup {
         mMenuColorPressed = attr.getColor(R.styleable.FloatingActionMenu_menu_colorPressed, 0xFFE75043);
         mMenuColorRipple = attr.getColor(R.styleable.FloatingActionMenu_menu_colorRipple, 0x99FFFFFF);
         mAnimationDelayPerItem = attr.getInt(R.styleable.FloatingActionMenu_menu_animationDelayPerItem, 50);
-        mIcon = attr.getDrawable(R.styleable.FloatingActionMenu_menu_icon);
-        if (mIcon == null) {
-            mIcon = getResources().getDrawable(R.drawable.fab_add);
+
+        if (mCustomIcon != null) {
+            mIcon = mCustomIcon;
+        } else {
+            mIcon = attr.getDrawable(R.styleable.FloatingActionMenu_menu_icon);
+            if (mIcon == null) {
+                mIcon = getResources().getDrawable(R.drawable.fab_add);
+            }
         }
         mLabelsSingleLine = attr.getBoolean(R.styleable.FloatingActionMenu_menu_labels_singleLine, false);
         mLabelsEllipsize = attr.getInt(R.styleable.FloatingActionMenu_menu_labels_ellipsize, 0);
@@ -985,7 +998,7 @@ public class FloatingActionMenu extends ViewGroup {
 
     public void removeAllMenuButtons() {
         close(true);
-        
+
         List<FloatingActionButton> viewsToRemove = new ArrayList<>();
         for (int i = 0; i < getChildCount(); i++) {
             View v = getChildAt(i);
